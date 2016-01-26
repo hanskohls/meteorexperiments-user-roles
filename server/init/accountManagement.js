@@ -7,15 +7,20 @@ Meteor.startup(function(){
     ];
   
   _.each(users, function(user){
-    var id;
-    id = Accounts.createUser({
-      email: user.email,
-      password: 'password',
-      profile: {name: user.name}
-    });
-    
+
+    var userAccount = Accounts.findUserByEmail(user.email);
+    var id = "";
+    if (userAccount == null){
+      id = Accounts.createUser({
+        email: user.email,
+        password: 'password',
+        profile: {name: user.name}
+      });
+    } else {
+      id = userAccount._id;
+    }
     if (user.roles.length > 0){
-      Roles.addUsersToRoles(id, user.roles, 'default-group');
+      Roles.setUserRoles(id, user.roles, 'default-group')
     }
   });
 });
